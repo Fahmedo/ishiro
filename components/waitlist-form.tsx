@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { CheckCircle, AlertCircle } from 'lucide-react'
+import { CheckCircle2, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { fadeInUp } from '@/lib/animations'
 
 interface FormData {
   name: string
@@ -30,60 +32,90 @@ const initialFormData: FormData = {
 }
 
 export default function WaitlistForm() {
+  const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const validateForm = () => {
-    if (!formData.name.trim()) {
-      setError('Name is required')
-      return false
+  const steps = [
+    {
+      title: 'Basic Information',
+      description: 'Let&apos;s get to know you',
+      fields: ['name', 'email']
+    },
+    {
+      title: 'Your Setup',
+      description: 'Tell us about your situation',
+      fields: ['country', 'bank', 'userType']
+    },
+    {
+      title: 'Your Challenges',
+      description: 'What problem are we solving?',
+      fields: ['expenseChallenge', 'valuePerception']
+    },
+    {
+      title: 'Gmail & Payment',
+      description: 'Final details',
+      fields: ['gmailWilling', 'paymentInterest']
     }
-    if (!formData.email.trim()) {
-      setError('Email is required')
-      return false
+  ]
+
+  const validateStep = (stepIndex: number) => {
+    const step = steps[stepIndex]
+    setError('')
+
+    for (const field of step.fields) {
+      if (!formData[field as keyof FormData]?.trim()) {
+        setError(`Please fill in all required fields`)
+        return false
+      }
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email')
-      return false
+
+    if (stepIndex === 0) {
+      if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        setError('Please enter a valid email address')
+        return false
+      }
     }
-    if (!formData.country) {
-      setError('Country is required')
-      return false
-    }
-    if (!formData.userType) {
-      setError('User type is required')
-      return false
-    }
+
     return true
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    if (!validateForm()) {
-      return
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1)
+      } else {
+        handleSubmit()
+      }
     }
+  }
+
+  const handlePrev = () => {
+    setError('')
+    setCurrentStep(Math.max(0, currentStep - 1))
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    setError('')
+  }
+
+  const handleSubmit = async () => {
+    if (!validateStep(currentStep)) return
 
     setLoading(true)
-
     try {
-      // Save to localStorage for persistence
-      localStorage.setItem('ishiro_waitlist', JSON.stringify(formData))
-      
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      localStorage.setItem('ishiro_waitlist', JSON.stringify(formData))
       setSubmitted(true)
-      setFormData(initialFormData)
       
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setSubmitted(false)
-      }, 5000)
+      // Trigger confetti
+      if (typeof window !== 'undefined' && window.confetti) {
+        window.confetti()
+      }
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -91,227 +123,332 @@ export default function WaitlistForm() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-    setError('')
-  }
-
   if (submitted) {
     return (
-      <div className="w-full max-w-2xl mx-auto text-center py-16">
-        <div className="inline-block mb-6 p-4 rounded-full bg-secondary/10">
-          <CheckCircle className="text-secondary" size={40} />
+      <motion.div
+        className="w-full max-w-md mx-auto"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="bg-white rounded-2xl p-8 text-center border border-green-200 bg-gradient-to-b from-green-50 to-white">
+          <motion.div
+            className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 0.5 }}
+          >
+            <CheckCircle2 size={32} className="text-green-600" />
+          </motion.div>
+          <h3 className="text-2xl font-bold text-primary mb-2">You&apos;re In!</h3>
+          <p className="text-muted-foreground mb-6">
+            Thanks for joining the Ishiro early access program. We&apos;ll be in touch soon.
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Check your email: <span className="font-semibold text-primary">{formData.email}</span>
+          </p>
+          <Button
+            onClick={() => {
+              setCurrentStep(0)
+              setFormData(initialFormData)
+              setSubmitted(false)
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            Start Over
+          </Button>
         </div>
-        <h3 className="text-2xl font-bold text-primary mb-3">
-          You&apos;re on the list!
-        </h3>
-        <p className="text-muted-foreground mb-6">
-          We&apos;ll send you early access as soon as Ishiro launches. Check your email for updates.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Didn&apos;t receive a confirmation? Check your spam folder or contact us at hello@ishiro.app
-        </p>
-      </div>
+      </motion.div>
     )
   }
 
+  const step = steps[currentStep]
+  const progressPercent = ((currentStep + 1) / steps.length) * 100
+
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-4">
-      {error && (
-        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 flex items-start gap-3">
-          <AlertCircle className="text-destructive mt-0.5 flex-shrink-0" size={20} />
-          <p className="text-destructive text-sm">{error}</p>
+    <motion.div
+      className="w-full max-w-lg mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Progress Bar */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-primary">{step.title}</h2>
+            <p className="text-muted-foreground text-sm mt-1">{step.description}</p>
+          </div>
+          <div className="text-sm font-semibold text-secondary">
+            {currentStep + 1}/{steps.length}
+          </div>
         </div>
+        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-secondary to-secondary/80"
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercent}%` }}
+            transition={{ duration: 0.5 }}
+          />
+        </div>
+      </div>
+
+      {/* Step Indicators */}
+      <div className="flex gap-2 mb-8">
+        {steps.map((_, idx) => (
+          <motion.div
+            key={idx}
+            className={`h-2 flex-1 rounded-full transition-colors ${
+              idx < currentStep
+                ? 'bg-secondary'
+                : idx === currentStep
+                ? 'bg-secondary/60'
+                : 'bg-muted'
+            }`}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+          />
+        ))}
+      </div>
+
+      {/* Form Content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-4 mb-8"
+        >
+          {currentStep === 0 && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Full Name *
+                </label>
+                <Input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Sarah Johnson"
+                  className="rounded-lg h-12 border-border focus:border-secondary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Email Address *
+                </label>
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="sarah@company.com"
+                  className="rounded-lg h-12 border-border focus:border-secondary"
+                />
+              </div>
+            </>
+          )}
+
+          {currentStep === 1 && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Country *
+                </label>
+                <select
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                >
+                  <option value="">Select country</option>
+                  <option value="US">United States</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="CA">Canada</option>
+                  <option value="AU">Australia</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Primary Bank Connection *
+                </label>
+                <select
+                  name="bank"
+                  value={formData.bank}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                >
+                  <option value="">Select bank</option>
+                  <option value="chase">Chase</option>
+                  <option value="bofa">Bank of America</option>
+                  <option value="wells">Wells Fargo</option>
+                  <option value="citi">Citibank</option>
+                  <option value="stripe">Stripe</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  I am a... *
+                </label>
+                <select
+                  name="userType"
+                  value={formData.userType}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                >
+                  <option value="">Select user type</option>
+                  <option value="individual">Individual/Freelancer</option>
+                  <option value="small-business">Small Business Owner</option>
+                  <option value="finance-team">Finance Team Member</option>
+                  <option value="founder">Startup Founder</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          {currentStep === 2 && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  What&apos;s your biggest expense tracking challenge? *
+                </label>
+                <select
+                  name="expenseChallenge"
+                  value={formData.expenseChallenge}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                >
+                  <option value="">Select a challenge</option>
+                  <option value="manual-entry">Manual data entry</option>
+                  <option value="categorization">Automatic categorization</option>
+                  <option value="reconciliation">Reconciliation</option>
+                  <option value="insights">Getting insights</option>
+                  <option value="multiple-accounts">Managing multiple accounts</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  How much would Ishiro be worth to you monthly? *
+                </label>
+                <select
+                  name="valuePerception"
+                  value={formData.valuePerception}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                >
+                  <option value="">Select value</option>
+                  <option value="under-50">Under $50</option>
+                  <option value="50-100">$50 - $100</option>
+                  <option value="100-200">$100 - $200</option>
+                  <option value="200-plus">$200+</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          {currentStep === 3 && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Would you connect your Gmail for receipt tracking? *
+                </label>
+                <div className="space-y-2">
+                  {['Yes, definitely', 'Maybe', 'No thanks'].map((option) => (
+                    <motion.label
+                      key={option}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <input
+                        type="radio"
+                        name="gmailWilling"
+                        value={option}
+                        checked={formData.gmailWilling === option}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 accent-secondary"
+                      />
+                      <span className="font-medium text-foreground">{option}</span>
+                    </motion.label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-2">
+                  Interest in premium features? *
+                </label>
+                <div className="space-y-2">
+                  {['Very interested', 'Somewhat interested', 'Not sure'].map((option) => (
+                    <motion.label
+                      key={option}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentInterest"
+                        value={option}
+                        checked={formData.paymentInterest === option}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 accent-secondary"
+                      />
+                      <span className="font-medium text-foreground">{option}</span>
+                    </motion.label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Error Message */}
+      {error && (
+        <motion.div
+          className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <AlertCircle size={18} className="text-red-600 flex-shrink-0" />
+          <p className="text-sm text-red-700">{error}</p>
+        </motion.div>
       )}
 
-      {/* Name Field */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Full Name *
-        </label>
-        <Input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="John Doe"
-          className="w-full h-10"
-        />
-      </div>
-
-      {/* Email Field */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Email Address *
-        </label>
-        <Input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="you@example.com"
-          className="w-full h-10"
-        />
-      </div>
-
-      {/* Two Column Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Country */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Country *
-          </label>
-          <select
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
+      {/* Navigation Buttons */}
+      <div className="flex gap-3">
+        {currentStep > 0 && (
+          <Button
+            onClick={handlePrev}
+            variant="outline"
+            className="flex-1 h-12 rounded-lg"
+            disabled={loading}
           >
-            <option value="">Select a country</option>
-            <option value="US">United States</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="FR">France</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        {/* Bank */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Primary Bank
-          </label>
-          <select
-            name="bank"
-            value={formData.bank}
-            onChange={handleChange}
-            className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
-          >
-            <option value="">Select a bank</option>
-            <option value="chase">Chase</option>
-            <option value="bofa">Bank of America</option>
-            <option value="wellsfargo">Wells Fargo</option>
-            <option value="citi">Citi</option>
-            <option value="amex">American Express</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      {/* User Type */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          I am a... *
-        </label>
-        <select
-          name="userType"
-          value={formData.userType}
-          onChange={handleChange}
-          className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
+            <ArrowLeft size={18} />
+          </Button>
+        )}
+        <Button
+          onClick={handleNext}
+          className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground h-12 rounded-lg font-semibold flex items-center justify-center gap-2"
+          disabled={loading}
         >
-          <option value="">Select user type</option>
-          <option value="individual">Individual / Freelancer</option>
-          <option value="small-business">Small Business Owner</option>
-          <option value="accountant">Accountant / Bookkeeper</option>
-          <option value="finance-team">Finance Team Member</option>
-          <option value="other">Other</option>
-        </select>
+          {loading ? (
+            <div className="w-4 h-4 border-2 border-secondary-foreground border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <>
+              {currentStep === steps.length - 1 ? 'Join Waitlist' : 'Next'}
+              {currentStep < steps.length - 1 && <ArrowRight size={18} />}
+            </>
+          )}
+        </Button>
       </div>
-
-      {/* Expense Challenge */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          My biggest expense tracking challenge
-        </label>
-        <select
-          name="expenseChallenge"
-          value={formData.expenseChallenge}
-          onChange={handleChange}
-          className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
-        >
-          <option value="">Select a challenge</option>
-          <option value="categorization">Manual categorization</option>
-          <option value="reconciliation">Reconciliation</option>
-          <option value="reporting">Reporting</option>
-          <option value="visibility">Lack of visibility</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      {/* Gmail Willing */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Willing to connect Gmail for receipt parsing?
-        </label>
-        <select
-          name="gmailWilling"
-          value={formData.gmailWilling}
-          onChange={handleChange}
-          className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
-        >
-          <option value="">Select option</option>
-          <option value="yes">Yes, absolutely</option>
-          <option value="maybe">Maybe, needs more info</option>
-          <option value="no">No, privacy concerns</option>
-        </select>
-      </div>
-
-      {/* Value Perception */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          What would you pay for Ishiro?
-        </label>
-        <select
-          name="valuePerception"
-          value={formData.valuePerception}
-          onChange={handleChange}
-          className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
-        >
-          <option value="">Select a range</option>
-          <option value="free">Free only</option>
-          <option value="5-10">$5-10/month</option>
-          <option value="10-20">$10-20/month</option>
-          <option value="20-50">$20-50/month</option>
-          <option value="50+">$50+/month</option>
-        </select>
-      </div>
-
-      {/* Payment Interest */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Interested in payment processing integration?
-        </label>
-        <select
-          name="paymentInterest"
-          value={formData.paymentInterest}
-          onChange={handleChange}
-          className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm"
-        >
-          <option value="">Select option</option>
-          <option value="very-interested">Very interested</option>
-          <option value="somewhat">Somewhat interested</option>
-          <option value="not-interested">Not interested</option>
-        </select>
-      </div>
-
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground h-11 font-semibold"
-      >
-        {loading ? 'Joining...' : 'Join the Waitlist'}
-      </Button>
-
-      <p className="text-xs text-muted-foreground text-center">
-        No spam, just updates about Ishiro. Unsubscribe anytime.
-      </p>
-    </form>
+    </motion.div>
   )
 }

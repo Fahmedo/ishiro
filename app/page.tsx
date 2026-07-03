@@ -7,6 +7,7 @@ import HowItWorks from '@/components/how-it-works'
 import Features from '@/components/features'
 import Dashboard from '@/components/dashboard'
 import Privacy from '@/components/privacy'
+import GmailTrust from '@/components/gmail-trust'
 import Waitlist from '@/components/waitlist'
 import Proof from '@/components/proof'
 import FAQ from '@/components/faq'
@@ -23,6 +24,7 @@ export default function Home() {
       <Features />
       <Dashboard />
       <Privacy />
+      <GmailTrust />
       <Waitlist />
       <Proof />
       <FAQ />
