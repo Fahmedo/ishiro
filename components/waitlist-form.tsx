@@ -11,11 +11,9 @@ interface FormData {
   name: string
   email: string
   country: string
-  bank: string
   userType: string
   expenseChallenge: string
   gmailWilling: string
-  valuePerception: string
   paymentInterest: string
 }
 
@@ -23,11 +21,9 @@ const initialFormData: FormData = {
   name: '',
   email: '',
   country: '',
-  bank: '',
   userType: '',
   expenseChallenge: '',
   gmailWilling: '',
-  valuePerception: '',
   paymentInterest: ''
 }
 
@@ -47,12 +43,12 @@ export default function WaitlistForm() {
     {
       title: 'Your Setup',
       description: 'Tell us about your situation',
-      fields: ['country', 'bank', 'userType']
+      fields: ['country', 'userType']
     },
     {
       title: 'Your Challenges',
       description: 'What problem are we solving?',
-      fields: ['expenseChallenge', 'valuePerception']
+      fields: ['expenseChallenge']
     },
     {
       title: 'Gmail & Payment',
@@ -224,8 +220,8 @@ export default function WaitlistForm() {
           {currentStep === 0 && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Full Name *
+                <label className="block text-base font-bold text-primary mb-3">
+                  Full Name
                 </label>
                 <Input
                   type="text"
@@ -233,12 +229,12 @@ export default function WaitlistForm() {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Sarah Johnson"
-                  className="rounded-lg h-12 border-border focus:border-secondary"
+                  className="rounded-lg h-12 border-border focus:border-secondary text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Email Address *
+                <label className="block text-base font-bold text-primary mb-3">
+                  Email Address
                 </label>
                 <Input
                   type="email"
@@ -246,7 +242,7 @@ export default function WaitlistForm() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="sarah@company.com"
-                  className="rounded-lg h-12 border-border focus:border-secondary"
+                  className="rounded-lg h-12 border-border focus:border-secondary text-base"
                 />
               </div>
             </>
@@ -255,53 +251,34 @@ export default function WaitlistForm() {
           {currentStep === 1 && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Country *
+                <label className="block text-base font-bold text-primary mb-3">
+                  Where are you based?
                 </label>
                 <select
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary text-base"
                 >
                   <option value="">Select country</option>
+                  <option value="NG">Nigeria</option>
                   <option value="US">United States</option>
                   <option value="UK">United Kingdom</option>
                   <option value="CA">Canada</option>
                   <option value="AU">Australia</option>
                   <option value="DE">Germany</option>
-                  <option value="FR">France</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Primary Bank Connection *
-                </label>
-                <select
-                  name="bank"
-                  value={formData.bank}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
-                >
-                  <option value="">Select bank</option>
-                  <option value="chase">Chase</option>
-                  <option value="bofa">Bank of America</option>
-                  <option value="wells">Wells Fargo</option>
-                  <option value="citi">Citibank</option>
-                  <option value="stripe">Stripe</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  I am a... *
+                <label className="block text-base font-bold text-primary mb-3">
+                  What best describes you?
                 </label>
                 <select
                   name="userType"
                   value={formData.userType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary text-base"
                 >
                   <option value="">Select user type</option>
                   <option value="individual">Individual/Freelancer</option>
@@ -316,14 +293,14 @@ export default function WaitlistForm() {
           {currentStep === 2 && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  What&apos;s your biggest expense tracking challenge? *
+                <label className="block text-base font-bold text-primary mb-3">
+                  What&apos;s your biggest expense tracking challenge?
                 </label>
                 <select
                   name="expenseChallenge"
                   value={formData.expenseChallenge}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary text-base"
                 >
                   <option value="">Select a challenge</option>
                   <option value="manual-entry">Manual data entry</option>
@@ -333,31 +310,14 @@ export default function WaitlistForm() {
                   <option value="multiple-accounts">Managing multiple accounts</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  How much would Ishiro be worth to you monthly? *
-                </label>
-                <select
-                  name="valuePerception"
-                  value={formData.valuePerception}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary"
-                >
-                  <option value="">Select value</option>
-                  <option value="under-50">Under $50</option>
-                  <option value="50-100">$50 - $100</option>
-                  <option value="100-200">$100 - $200</option>
-                  <option value="200-plus">$200+</option>
-                </select>
-              </div>
             </>
           )}
 
           {currentStep === 3 && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Would you connect your Gmail for receipt tracking? *
+                <label className="block text-base font-bold text-primary mb-3">
+                  Would you connect your Gmail for receipt tracking?
                 </label>
                 <div className="space-y-2">
                   {['Yes, definitely', 'Maybe', 'No thanks'].map((option) => (
@@ -381,8 +341,8 @@ export default function WaitlistForm() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-primary mb-2">
-                  Interest in premium features? *
+                <label className="block text-base font-bold text-primary mb-3">
+                  Interest in premium features?
                 </label>
                 <div className="space-y-2">
                   {['Very interested', 'Somewhat interested', 'Not sure'].map((option) => (
