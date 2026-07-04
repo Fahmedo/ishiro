@@ -14,7 +14,7 @@ interface FormData {
   userType: string
   expenseChallenge: string
   gmailWilling: string
-  paymentInterest: string
+  suggestion: string
 }
 
 const initialFormData: FormData = {
@@ -24,7 +24,7 @@ const initialFormData: FormData = {
   userType: '',
   expenseChallenge: '',
   gmailWilling: '',
-  paymentInterest: ''
+  suggestion: ''
 }
 
 export default function WaitlistForm() {
@@ -53,7 +53,7 @@ export default function WaitlistForm() {
     {
       title: 'Gmail & Payment',
       description: 'Final details',
-      fields: ['gmailWilling', 'paymentInterest']
+      fields: ['gmailWilling', 'suggestion']
     }
   ]
 
@@ -104,20 +104,27 @@ export default function WaitlistForm() {
 
     setLoading(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      localStorage.setItem('ishiro_waitlist', JSON.stringify(formData))
-      setSubmitted(true)
-      
-      // Trigger confetti
-      if (typeof window !== 'undefined' && window.confetti) {
-        window.confetti()
+      const response = await fetch('https://docs.google.com/forms/u/0/d/e/1FAIpQLScHTqrPc5dWG1ZkDKUzPeW-j-Gn2OnWDwf86ZfeWaw8GLCZ4w/formResponse', {
+        method: 'POST', // Specifies the request method
+        headers: {
+          'Content-Type': 'application/json' // Tells the server we are sending JSON
+        },
+        body:  JSON.stringify(formData) // Converts JavaScript object to JSON string
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
-    } finally {
+  
+      const result = await response.json(); // Parses the JSON response from server
+      console.log('Success:', result);
+    } catch (error) {
+      console.error('Error sending data:', error);
+    }  finally {
       setLoading(false)
     }
   }
+  
 
   if (submitted) {
     return (
@@ -220,7 +227,7 @@ export default function WaitlistForm() {
           {currentStep === 0 && (
             <>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   Full Name
                 </label>
                 <Input
@@ -233,7 +240,7 @@ export default function WaitlistForm() {
                 />
               </div>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   Email Address
                 </label>
                 <Input
@@ -251,7 +258,7 @@ export default function WaitlistForm() {
           {currentStep === 1 && (
             <>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   Where are you based?
                 </label>
                 <select
@@ -271,7 +278,7 @@ export default function WaitlistForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   What best describes you?
                 </label>
                 <select
@@ -293,7 +300,7 @@ export default function WaitlistForm() {
           {currentStep === 2 && (
             <>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   What&apos;s your biggest expense tracking challenge?
                 </label>
                 <select
@@ -316,7 +323,7 @@ export default function WaitlistForm() {
           {currentStep === 3 && (
             <>
               <div>
-                <label className="block text-base font-bold text-primary mb-3">
+                <label className="block text-base font-bold text-black mb-3">
                   Would you connect your Gmail for receipt tracking?
                 </label>
                 <div className="space-y-2">
@@ -344,26 +351,20 @@ export default function WaitlistForm() {
                 <label className="block text-base font-bold text-primary mb-3">
                   Interest in premium features?
                 </label>
-                <div className="space-y-2">
-                  {['Very interested', 'Somewhat interested', 'Not sure'].map((option) => (
-                    <motion.label
-                      key={option}
+                <motion.div
+                      
                       className="flex items-center gap-3 p-3 rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <input
-                        type="radio"
-                        name="paymentInterest"
-                        value={option}
-                        checked={formData.paymentInterest === option}
+                      <textarea
+                        name="suggestion"
+                        value={formData.suggestion}
                         onChange={handleInputChange}
                         className="w-4 h-4 accent-secondary"
                       />
-                      <span className="font-medium text-foreground">{option}</span>
-                    </motion.label>
-                  ))}
-                </div>
+                     
+                    </motion.div>
               </div>
             </>
           )}
