@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { ArrowRight, TrendingUp, Zap } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { fadeInUp, staggerContainer } from '@/lib/animations'
-import MiniDashboard from './mini-dashboard'
+import { Button } from '@/components/ui/button';
+import { ArrowRight, TrendingUp, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { fadeInUp, staggerContainer } from '@/lib/animations';
+import MiniDashboard from './mini-dashboard';
 
 export default function Hero() {
   return (
@@ -28,7 +28,9 @@ export default function Hero() {
               variants={fadeInUp}
             >
               <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
-              <span className="text-sm font-medium text-foreground">Now accepting early access</span>
+              <span className="text-sm font-medium text-foreground">
+                Now accepting early access
+              </span>
             </motion.div>
 
             {/* Main Heading */}
@@ -45,7 +47,9 @@ export default function Hero() {
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl text-balance leading-relaxed"
               variants={fadeInUp}
             >
-              Connect your bank once. Ishiro automatically categorizes expenses, reconciles transactions, and surfaces insights that move the needle.
+              Connect your bank once. Ishiro automatically categorizes expenses,
+              reconciles transactions, and surfaces insights that move the
+              needle.
             </motion.p>
 
             {/* Value Props */}
@@ -54,37 +58,51 @@ export default function Hero() {
                 <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
                   <Zap size={14} className="text-secondary" />
                 </div>
-                <span className="text-foreground font-medium">Categorizes 100% of transactions automatically</span>
+                <span className="text-foreground font-medium">
+                  Categorizes 100% of transactions automatically
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
                   <TrendingUp size={14} className="text-secondary" />
                 </div>
-                <span className="text-foreground font-medium">Real-time spending insights & trends</span>
+                <span className="text-foreground font-medium">
+                  Real-time spending insights & trends
+                </span>
               </div>
             </motion.div>
 
             {/* CTA Buttons */}
-            <motion.div className="flex flex-col sm:flex-row gap-4 mb-12" variants={fadeInUp}>
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+              variants={fadeInUp}
+            >
               <Button
-                onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('waitlist')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex items-center justify-center gap-2 h-12 px-8 text-base font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-secondary/30"
                 size="lg"
               >
                 Join Early Access
                 <ArrowRight size={18} />
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="border-border hover:bg-muted text-foreground h-12 px-8 text-base font-semibold rounded-lg"
                 size="lg"
               >
                 View Demo
-              </Button>
+              </Button> */}
             </motion.div>
 
             {/* Trust Badges */}
-            <motion.div className="flex flex-wrap gap-4 text-sm text-muted-foreground" variants={fadeInUp}>
+            <motion.div
+              className="flex flex-wrap gap-4 text-sm text-muted-foreground"
+              variants={fadeInUp}
+            >
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center">
                   <div className="w-2 h-2 rounded-full bg-secondary"></div>
@@ -107,14 +125,11 @@ export default function Hero() {
           </div>
 
           {/* Right Column - Dashboard Preview */}
-          <motion.div
-            className="order-1 md:order-2"
-            variants={fadeInUp}
-          >
+          <motion.div className="order-1 md:order-2" variants={fadeInUp}>
             <MiniDashboard />
           </motion.div>
         </div>
       </motion.div>
     </section>
-  )
+  );
 }
