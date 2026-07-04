@@ -1,12 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     { label: 'Features', href: '#features' },
@@ -14,7 +15,7 @@ export default function Header() {
     { label: 'Privacy', href: '#privacy' },
     { label: 'Gmail Security', href: '#gmail-trust' },
     { label: 'FAQ', href: '#faq' },
-  ]
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -26,12 +27,20 @@ export default function Header() {
             whileHover={{ scale: 1.05 }}
           >
             <motion.div
-              className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg text-primary-foreground"
+              className="w-14 h-14  rounded-lg flex items-center justify-center font-bold text-lg text-primary-foreground"
               whileHover={{ rotate: 10 }}
             >
-              I
+              <Image
+                src={'/ishiro-white.png'}
+                alt="ishiro logo"
+                width="100"
+                height="100"
+                className="object-center w-full"
+              />
             </motion.div>
-            <span className="text-xl font-bold text-primary hidden sm:inline">Ishiro</span>
+            <span className="text-xl font-bold text-primary hidden sm:inline">
+              Ishiro
+            </span>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -64,7 +73,11 @@ export default function Header() {
             whileTap={{ scale: 0.95 }}
           >
             <Button
-              onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() =>
+                document
+                  .getElementById('waitlist')
+                  ?.scrollIntoView({ behavior: 'smooth' })
+              }
               className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold shadow-lg shadow-secondary/30"
               size="sm"
             >
@@ -119,8 +132,10 @@ export default function Header() {
               >
                 <Button
                   onClick={() => {
-                    document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
-                    setIsOpen(false)
+                    document
+                      .getElementById('waitlist')
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                    setIsOpen(false);
                   }}
                   className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
                   size="sm"
@@ -133,5 +148,5 @@ export default function Header() {
         </AnimatePresence>
       </div>
     </header>
-  )
+  );
 }

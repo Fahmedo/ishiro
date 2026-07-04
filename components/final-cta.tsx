@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export default function FinalCTA() {
   return (
@@ -11,31 +11,32 @@ export default function FinalCTA() {
           Stop Wasting Time on Expenses
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
-          Join hundreds of professionals who are reclaiming hours each month with intelligent expense tracking.
+          Join hundreds of professionals who are reclaiming hours each month
+          with intelligent expense tracking.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button
-            onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() =>
+              document
+                .getElementById('waitlist')
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex items-center gap-2 h-12 px-8"
             size="lg"
           >
             Join the Waitlist
             <ArrowRight size={18} />
           </Button>
-          <Button
+          {/* <Button
             variant="outline"
             className="border-border hover:bg-muted text-foreground h-12 px-8"
             size="lg"
           >
             Schedule Demo
-          </Button>
+          </Button> */}
         </div>
-
-        <p className="text-sm text-muted-foreground">
-          🚀 Early access launching Q3 2024. Limited spots available.
-        </p>
       </div>
     </section>
-  )
+  );
 }
