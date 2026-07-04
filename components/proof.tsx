@@ -1,40 +1,43 @@
-'use client'
+'use client';
 
-import { Star } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { fadeInUp, staggerContainer } from '@/lib/animations'
-import { AnimatedCounter } from './animated-counter'
+import { Star } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { fadeInUp, staggerContainer } from '@/lib/animations';
+import { AnimatedCounter } from './animated-counter';
 
 const avatarImages = [
   { name: 'Sarah', color: 'bg-purple-400', initials: 'SC' },
   { name: 'Michael', color: 'bg-blue-400', initials: 'MR' },
   { name: 'Emma', color: 'bg-pink-400', initials: 'ET' },
-]
+];
 
 export default function Proof() {
   const testimonials = [
     {
-      quote: "Ishiro saved us 20+ hours per month on expense categorization. The accuracy is unbelievable.",
-      author: "Sarah Chen",
-      role: "CFO, Tech Startup",
+      quote:
+        'Ishiro saved us 20+ hours per month on expense categorization. The accuracy is unbelievable.',
+      author: 'Sarah Chen',
+      role: 'CFO, Tech Startup',
       stars: 5,
-      avatar: { name: 'Sarah', color: 'bg-purple-400', initials: 'SC' }
+      avatar: { name: 'Sarah', color: 'bg-purple-400', initials: 'SC' },
     },
     {
-      quote: "Finally, a solution that doesn't treat my financial data like it's their asset. Privacy-first is the way.",
-      author: "Michael Rodriguez",
-      role: "Freelance Consultant",
+      quote:
+        "Finally, a solution that doesn't treat my financial data like it's their asset. Privacy-first is the way.",
+      author: 'Michael Rodriguez',
+      role: 'Freelance Consultant',
       stars: 5,
-      avatar: { name: 'Michael', color: 'bg-blue-400', initials: 'MR' }
+      avatar: { name: 'Michael', color: 'bg-blue-400', initials: 'MR' },
     },
     {
-      quote: "Our team went from dreading expense reports to actually getting insights we can act on.",
-      author: "Emma Thompson",
-      role: "Finance Manager, SaaS Company",
+      quote:
+        'Our team went from dreading expense reports to actually getting insights we can act on.',
+      author: 'Emma Thompson',
+      role: 'Finance Manager, SaaS Company',
       stars: 5,
-      avatar: { name: 'Emma', color: 'bg-pink-400', initials: 'ET' }
-    }
-  ]
+      avatar: { name: 'Emma', color: 'bg-pink-400', initials: 'ET' },
+    },
+  ];
 
   return (
     <section className="w-full py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-secondary/5 to-transparent">
@@ -106,15 +109,19 @@ export default function Proof() {
                 transition={{ delay: 0.4 + index * 0.1 }}
               >
                 <motion.div
-                  className={`w-10 h-10 rounded-full ${testimonial.avatar.color} flex items-center justify-center text-white font-bold text-sm`}
+                  className={`w-10 h-10 rounded-full ₦{testimonial.avatar.color} flex items-center justify-center text-white font-bold text-sm`}
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: 'spring', stiffness: 400 }}
                 >
                   {testimonial.avatar.initials}
                 </motion.div>
                 <div>
-                  <p className="font-semibold text-primary text-sm">{testimonial.author}</p>
-                  <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                  <p className="font-semibold text-primary text-sm">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {testimonial.role}
+                  </p>
                 </div>
               </motion.div>
             </motion.div>
@@ -140,7 +147,12 @@ export default function Proof() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <AnimatedCounter to={99.2} duration={2.5} suffix="%" className="text-4xl md:text-5xl font-bold" />
+              <AnimatedCounter
+                to={99.2}
+                duration={2.5}
+                suffix="%"
+                className="text-4xl md:text-5xl font-bold"
+              />
             </motion.p>
             <p className="text-muted-foreground">Categorization Accuracy</p>
           </motion.div>
@@ -155,7 +167,12 @@ export default function Proof() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <AnimatedCounter to={50000} duration={2.5} suffix="+" className="text-4xl md:text-5xl font-bold" />
+              <AnimatedCounter
+                to={50000}
+                duration={2.5}
+                suffix="+"
+                className="text-4xl md:text-5xl font-bold"
+              />
             </motion.p>
             <p className="text-muted-foreground">Transactions Analyzed</p>
           </motion.div>
@@ -170,12 +187,17 @@ export default function Proof() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <AnimatedCounter to={4.9} duration={2.5} suffix="/5" className="text-4xl md:text-5xl font-bold" />
+              <AnimatedCounter
+                to={4.9}
+                duration={2.5}
+                suffix="/5"
+                className="text-4xl md:text-5xl font-bold"
+              />
             </motion.p>
             <p className="text-muted-foreground">Average Rating</p>
           </motion.div>
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
